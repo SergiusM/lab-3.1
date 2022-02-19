@@ -1,35 +1,79 @@
 #include <iostream>
-#include <algorithm>
-
-// Есть ли в строке s заданная буква
-bool isConsist(int i, char c, std::string& s)
+#include <chrono>
+#define M 10000
+#define N 100000
+class Timer
 {
-    if (i > s.length())
-        return false;
-    if (s[i] == c)
-        return true;
-    return isConsist(i + 1, c, s);
-}
+private:
+	using clock_t = std::chrono::high_resolution_clock;
+	using second_t = std::chrono::duration<double, std::ratio<1> >;
 
-// Факториал f(n) = n * f(n-1)
-int f(int n)
+	std::chrono::time_point<clock_t> m_beg;
+
+public:
+	Timer() : m_beg(clock_t::now())
+	{
+	}
+
+	void reset()
+	{
+		m_beg = clock_t::now();
+	}
+
+	double elapsed() const
+	{
+		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
+	}
+};
+int BinarySearch(int* mas, int l, int n, int k)
 {
-    // 1. Терминирующее условие
-    if (n == 0)
-        return 1;
+	if (k < mas[l])
+		return -1;
+	if (k == mas[l])
+		return 0;
+	if (k > mas[n])
+		return -1;
 
-    // 2. Запуск рекурсии с отличающимися параметрами
-    return n * f(n - 1);
+	int a = l;
+	int b = n;
+
+	while (a + 1 < b)
+	{
+		int c = (a + b) / 2;
+		if (k > mas[c])
+			a = c;
+		else
+			b = c;
+	}
+	if (mas[b] == k)
+		return b;
+	else
+		return -1;
 }
 
 int main()
 {
-    std::cout << f(6) << std::endl;
-    std::string s = "bcad";
-    std::cout << isConsist(0, 'e', s) << std::endl;
+	srand(time(0));
+	int* mas = new int[N];
+	int K = rand() % N + 1;
 
-    int x[10] = { 1,2,3,462,621,6,2,6,7 };
-    std::sort(x, x + 10);
+	for (int i = 0; i < N; i++)
+		mas[i] = rand();
 
-    return 0;
+	Timer A;
+	for (int i = 0; i < M; i++)
+	{
+		BinarySearch(mas, 0, N - 1, K);
+	}
+	std::cout << "BinarySearch = " << A.elapsed() << std::endl;
+
+	Timer B;
+	for (int i = 0; i < M; i++)
+		for (int j = 0; j < N; j++)
+			if (mas[j] == K)
+			{
+				break;
+			}
+	std::cout << "Search= " << B.elapsed() << std::endl;
+	return 0;
 }
