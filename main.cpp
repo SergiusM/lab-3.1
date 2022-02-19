@@ -58,7 +58,7 @@ int main()
 	int K = rand() % N + 1;
 
 	for (int i = 0; i < N; i++)
-		mas[i] = rand();
+		mas[i] = rand()*rand()
 
 	Timer A;
 	for (int i = 0; i < M; i++)
